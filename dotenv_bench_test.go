@@ -12,6 +12,6 @@ func BenchmarkReader(b *testing.B) {
 	r := env.newReader(in)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		r.Read(make([]byte, in.Len()))
+		_, _ = r.Read(make([]byte, in.Len()))
 	}
 }

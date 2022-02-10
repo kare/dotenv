@@ -91,7 +91,7 @@ func TestSetenvError(t *testing.T) {
 	env.setter = &errorSetter{}
 	in := "VAR=VAL\n"
 	r := env.newReader(strings.NewReader(in))
-	r.Read(make([]byte, len(in)))
+	_, _ = r.Read(make([]byte, len(in)))
 	if err := env.Apply(); err.Error() != "expected syscall error in test" {
 		t.Fatalf("unexpected error: '%v'", err)
 	}

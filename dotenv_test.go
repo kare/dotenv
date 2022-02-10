@@ -16,7 +16,7 @@ func TestApply(t *testing.T) {
 	env := dotenv.New()
 	input := strings.Join(envs, "\n")
 	input = input + "\n"
-	env.Load(strings.NewReader(input))
+	_ = env.Load(strings.NewReader(input))
 	if err := env.Apply(); err != nil {
 		t.Fatalf("unexpected error: '%v'", err)
 	}

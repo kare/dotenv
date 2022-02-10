@@ -11,7 +11,9 @@ import (
 func ExampleNew() {
 	env := dotenv.New()
 	r := strings.NewReader("VAR=VAL\n")
-	env.Load(r)
+	if err := env.Load(r); err != nil {
+		fmt.Fprintf(os.Stderr, "error while running example: %v", err)
+	}
 	fmt.Println(os.Getenv("VAR"))
 	// Output:
 	// VAL
