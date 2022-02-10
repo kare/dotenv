@@ -7,6 +7,9 @@ import (
 	"testing"
 )
 
+// Verify that DefaultEnvSetter implements EnvSetter.
+var _ EnvSetter = DefaultEnvSetter{}
+
 func TestByteCounter(t *testing.T) {
 	s := "1234567890\n"
 	in := strings.NewReader(s)

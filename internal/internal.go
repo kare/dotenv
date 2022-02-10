@@ -15,7 +15,9 @@ type (
 		Setenv(string, string) error
 	}
 	// DefaultEnvSetter delegates calls os.Setenv(string, string).
-	DefaultEnvSetter struct{}
+	DefaultEnvSetter struct {
+		EnvSetter
+	}
 )
 
 // Wrap wraps given split function and counts bytes streamed through.
