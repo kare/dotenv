@@ -1,48 +1,59 @@
-import_path := kkn.fi/dotenv
-golint := $(GOPATH)/bin/golint
+LANG := en_US.UTF-8
+SHELL := /bin/bash
+.SHELLFLAGS := --norc --noprofile -e -u -o pipefail -c
+.DEFAULT_GOAL := build
 
-.SHELLFLAGS := -c # Run commands in a -c flag
-.ONESHELL: ; # scripts execute in same shell
-.SILENT: ; # no need for @
-.NOTPARALLEL: ; # wait for this target to finish
-.EXPORT_ALL_VARIABLES: ; # send all vars to shell
-.DEFAULT_GOAL := dotenv
+name := kkn.fi/dotenv
 
-.PHONY: help
-help: ## Show Help
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "%-15s %s\n", $$1, $$2}'
+GOIMPORTS := $(GOPATH)/bin/goimports
+STATICCHECK := $(GOPATH)/bin/staticcheck
+GOLANGCI-LINT := $(GOPATH)/bin/golangci-lint
+
+.PHONY: build
+build:
+	go build $(name)
 
 .PHONY: test
-test: ## Run unit tests
-	go test -v ./...
+test:
+	go test $(name)
 
-.PHONY: benchmark
-benchmark: ## Run benchmarks
-	go test -run=XXX -bench=.
+$(GOIMPORTS):
+	go install golang.org/x/tools/cmd/goimports@latest
 
-.PHONY: dotenv
-dotenv: ## Build package (default target)
-	go build $(import_path)
+$(GOLANGCI-LINT):
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v1.45.2
+
+$(STATICCHECK):
+	go install honnef.co/go/tools/cmd/staticcheck@latest
 
 .PHONY: fmt
-fmt: ## Run gofmt with simplify and write results to files
-	gofmt -s -w .
+fmt:
+	gofmt -w -s .
+
+.PHONY: goimports
+goimports: fmt $(GOIMPORTS)
+	$(GOIMPORTS) -w .
+
+.PHONY: staticcheck
+staticcheck: $(STATICCHECK)
+	$(STATICCHECK) ./...
+
+.PHONY: golangci-lint
+golangci-lint: $(GOLANGCI-LINT)
+	$(GOLANGCI-LINT) run ./...
+
+.PHONY: cover
+cover:
+	go test -coverprofile=coverage.out $(name)/...
+	go tool cover -html=coverage.out
+	@rm -f coverage.out
+
+.PHONY: heat
+heat:
+	go test -covermode=count -coverprofile=count.out $(name)/...
+	go tool cover -html=count.out
+	@rm -f count.out
 
 .PHONY: clean
-clean: ## Clean all generated files
-	go clean -i -r
-
-coverfile := $(shell mktemp)
-.PHONY: cover
-cover: ## Run coverage report
-	go test -coverprofile=$$coverfile $(shell go list ./...)
-	go tool cover -func=$$coverfile
-	go tool cover -html=$$coverfile
-	rm -f $$coverfile
-
-$(golint): ## Install golint
-	GO111MODULE=off go get -u golang.org/x/lint/golint
-
-.PHONY: golint
-golint: $(golint) ## Run golint
-	golint
+clean:
+	go clean
