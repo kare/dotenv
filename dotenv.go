@@ -11,7 +11,7 @@ import (
 )
 
 // ErrInvalidFormat describes an error condition where input line is missing '=' character.
-var ErrInvalidFormat = errors.New("input line missing character '='")
+var ErrInvalidFormat = errors.New("dotenv: input line missing character '='")
 
 type (
 	// Env holds variable-value pairs.

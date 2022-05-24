@@ -64,7 +64,7 @@ func TestReaderInvalidFormatError(t *testing.T) {
 	}{
 		{
 			"VAR:VAL\n",
-			errors.New("input line missing character '='"),
+			errors.New("dotenv: input line missing character '='"),
 		},
 	}
 	for _, tc := range testData {
