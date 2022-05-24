@@ -119,3 +119,35 @@ func TestReaderError(t *testing.T) {
 		t.Fatalf("expected error '%v', got '%v'", expected, err)
 	}
 }
+
+func TestGetVariable(t *testing.T) {
+	env := New()
+	_ = env.Load(strings.NewReader("VAR=VAL\n"))
+	expected := "VAL"
+	val, err := env.Get("VAR")
+	if val != expected {
+		t.Errorf("expecting VAR to have value '%v', got '%v'", expected, val)
+	}
+	if err != nil {
+		t.Errorf("unxpected error: %v", err)
+	}
+}
+
+func TestGetVariableNotPresent(t *testing.T) {
+	env := New()
+	_ = env.Load(strings.NewReader("FOO=BAR\n"))
+	expected := ""
+	val, err := env.Get("VAR")
+	if val != expected {
+		t.Errorf("expecting VAR to have value '%v', got '%v'", expected, val)
+	}
+	if err != nil {
+		expected = "dotenv: variable with key 'VAR' not found"
+		if err.Error() != expected {
+			t.Errorf("expecting error message: '%v, got '%v'", expected, err)
+		}
+	}
+	if err == nil {
+		t.Error("expecting error, but got nil")
+	}
+}

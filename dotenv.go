@@ -3,6 +3,7 @@ package dotenv
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 
@@ -42,6 +43,20 @@ func (e *Env) Load(r io.Reader) error {
 		return err
 	}
 	return nil
+}
+
+// Get reads value of given key from dotenv.
+func (e *Env) Get(key string) (string, error) {
+	var (
+		// value of the given key
+		val string
+		// exists is true if value if found with given key
+		exists bool
+	)
+	if val, exists = e.values[key]; !exists {
+		return "", fmt.Errorf("dotenv: variable with key '%v' not found", key)
+	}
+	return val, nil
 }
 
 // Apply sets currently loaded variable-value pairs to shell environment.
