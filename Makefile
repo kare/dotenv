@@ -46,13 +46,13 @@ golangci-lint: $(GOLANGCI-LINT)
 cover:
 	go test -coverprofile=coverage.out $(name)/...
 	go tool cover -html=coverage.out
-	@rm -f coverage.out
+	@$(RM) coverage.out
 
 .PHONY: heat
 heat:
 	go test -covermode=count -coverprofile=count.out $(name)/...
 	go tool cover -html=count.out
-	@rm -f count.out
+	@$(RM) count.out
 
 .PHONY: clean
 clean:
